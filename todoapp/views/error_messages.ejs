@@ -1,0 +1,12 @@
+<%# ★★★ 修正点 ★★★ %>
+<%# errorMessageが存在し、かつ、配列の長さが0より大きい場合のみ表示する %>
+<% if (typeof errorMessage !== 'undefined' && errorMessage && errorMessage.length > 0) { %>
+  <div class="alert alert-warning" role="alert">
+    <strong>Warning!</strong> The form contains <%= errorMessage.length %> errors.
+    <ul>
+      <% errorMessage.forEach(function(error) { %>
+        <li><%= error %></li>
+      <% }); %>
+    </ul>
+  </div>
+<% } %>

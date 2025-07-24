@@ -1,8 +1,150 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&family=Share+Tech+Mono&display=swap');
+
 body {
-  padding: 50px;
-  font: 14px "Lucida Grande", Helvetica, Arial, sans-serif;
+  padding: 0;
+  font: 17px 'Orbitron', 'Share Tech Mono', 'Segoe UI', 'Lucida Grande', Helvetica, Arial, sans-serif;
+  background: radial-gradient(ellipse at 70% 20%, #232946 0%, #0d1021 80%, #05060a 100%),
+    url('https://www.transparenttextures.com/patterns/stardust.png');
+  min-height: 100vh;
+  color: #e0e6f6;
+  letter-spacing: 0.03em;
+  position: relative;
+  overflow-x: hidden;
+}
+
+body::before {
+  content: '';
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 0;
+  background: radial-gradient(circle at 80% 10%, rgba(120,180,255,0.08) 0%, transparent 70%),
+              radial-gradient(circle at 20% 80%, rgba(255,255,255,0.04) 0%, transparent 80%);
+  pointer-events: none;
+}
+
+.container {
+  background: rgba(20, 30, 48, 0.97);
+  border-radius: 22px;
+  box-shadow: 0 6px 40px 8px #05060a, 0 1.5px 0 #3a506b;
+  padding: 36px 28px 28px 28px;
+  margin-top: 48px;
+  max-width: 600px;
+  margin-left: auto;
+  margin-right: auto;
+  border: 2px solid #232946;
+  z-index: 1;
+  position: relative;
+}
+
+@media (max-width: 700px) {
+  .container {
+    padding: 16px 4px 16px 4px;
+    margin-top: 16px;
+  }
+}
+
+h1, h2, label {
+  color: #a3bffa;
+  text-shadow: 0 2px 16px #0d1021, 0 1px 0 #232946;
+  font-family: 'Orbitron', 'Share Tech Mono', 'Segoe UI', sans-serif;
+  letter-spacing: 0.08em;
+}
+
+input[type="text"], input[type="password"] {
+  border-radius: 10px;
+  border: 1.5px solid #3a506b;
+  padding: 10px 14px;
+  margin-bottom: 14px;
+  width: 80%;
+  background: #181c2f;
+  color: #e0e6f6;
+  font-family: 'Share Tech Mono', 'Segoe UI', monospace;
+  transition: box-shadow 0.2s, border 0.2s;
+}
+input[type="text"]:focus, input[type="password"]:focus {
+  outline: none;
+  box-shadow: 0 0 0 2px #a3bffa, 0 0 8px #232946;
+  border: 2px solid #a3bffa;
+}
+
+input[type="submit"], .btn-primary {
+  border-radius: 10px;
+  padding: 10px 28px;
+  font-weight: 700;
+  background: linear-gradient(90deg, #5f6caf 0%, #232946 100%);
+  border: none;
+  color: #fff;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 12px rgba(44,83,100,0.22);
+  letter-spacing: 0.08em;
+  font-family: 'Orbitron', 'Share Tech Mono', 'Segoe UI', sans-serif;
+  text-transform: uppercase;
+}
+input[type="submit"]:hover, .btn-primary:hover {
+  background: linear-gradient(90deg, #a3bffa 0%, #232946 100%);
+  box-shadow: 0 4px 24px #232946;
 }
 
 a {
-  color: #00B7FF;
+  color: #a3bffa;
+}
+
+a.btn-primary {
+  background: linear-gradient(90deg, #5f6caf 0%, #232946 100%);
+  border: none;
+  font-family: 'Orbitron', 'Share Tech Mono', 'Segoe UI', sans-serif;
+}
+a.btn-primary:hover {
+  background: linear-gradient(90deg, #a3bffa 0%, #232946 100%);
+}
+
+ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+ul li {
+  background: rgba(35,41,70,0.98);
+  margin-bottom: 12px;
+  padding: 16px 22px;
+  border-radius: 14px;
+  font-size: 1.13em;
+  display: flex;
+  align-items: center;
+  box-shadow: 0 2px 12px rgba(44,83,100,0.13);
+  transition: transform 0.1s, box-shadow 0.1s;
+  border: 1.5px solid #232946;
+  font-family: 'Share Tech Mono', 'Segoe UI', monospace;
+}
+ul li:hover {
+  transform: translateY(-2px) scale(1.03);
+  box-shadow: 0 6px 32px #0d1021;
+  border: 2px solid #a3bffa;
+}
+
+.list-group-item.text-muted {
+  background: transparent;
+  color: #7b8db0;
+  border: none;
+}
+
+/* エラーメッセージ用 */
+strong, .alert {
+  color: #e53e3e;
+}
+
+.navbar {
+  border-radius: 0 0 16px 16px;
+  box-shadow: 0 2px 16px #05060a;
+  background: linear-gradient(90deg, #181c2f 0%, #232946 100%);
+  border-bottom: 2px solid #232946;
+}
+.navbar .navbar-brand, .navbar .nav-link {
+  color: #a3bffa !important;
+  text-shadow: 0 1px 8px #0d1021;
+  font-family: 'Orbitron', 'Share Tech Mono', 'Segoe UI', sans-serif;
+}
+.navbar .nav-link:hover {
+  color: #fff !important;
 }

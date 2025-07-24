@@ -7,7 +7,9 @@ module.exports = {
     connection: {
       database: "todo_app",
       user: "root",
-      password: "passpword",
+      password: "password",
+      // ★★★ この行を追加 ★★★
+      charset: 'utf8mb4'
     },
     pool: {
       min: 2,
@@ -21,6 +23,7 @@ module.exports = {
       database: "todo_app",
       user: "root",
       password: "password",
+      charset: 'utf8mb4'
     },
     pool: {
       min: 2,
@@ -34,6 +37,7 @@ module.exports = {
       database: "todo_app",
       user: "root",
       password: "password",
+      charset: 'utf8mb4'
     },
     pool: {
       min: 2,

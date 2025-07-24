@@ -1,19 +1,272 @@
 <!DOCTYPE html>
 <html>
-  <head>
+<head>
     <title><%= title %></title>
-    <link rel='stylesheet' href='/stylesheets/style.css' />
-  </head>
-  <body>
-  <form action="/" method="post">
-    <label>タスクの追加</label>
-    <input required type="text" name="add" placeholder="何をする?"/>
-    <input type="submit" value="追加"/>
-  </form>
-  <ul>
-    <% for(let todo of todos){ %>
-      <li><span><%= todo.content %></span></li>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+    <style>
+        .task-completed { text-decoration: line-through; color: #6c757d; }
+        .subtask-list { margin-top: 10px; padding-left: 20px; border-left: 2px solid #eee; }
+    </style>
+</head>
+<body>
+<%- include('./header'); %>
+<div class="container mt-4">
+    <%- include('./error_messages'); %>
+    <% if(isAuth) { %>
+    <div class="row">
+        <div class="col-md-4 order-md-2 mb-4">
+            <div class="card shadow-sm sticky-top" style="top: 20px;">
+                <div class="card-body text-center">
+                    <h3 class="h5 mb-3">🍅 ポモドーロ・タイマー</h3>
+                    <h2 id="timer-display" class="display-4 font-weight-bold">25:00</h2>
+                    <p id="timer-message">集中するタスクを選んでください</p>
+                    <div class="btn-group">
+                        <button id="start-btn" class="btn btn-primary" disabled>スタート</button>
+                        <button id="reset-btn" class="btn btn-secondary">リセット</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-8 order-md-1">
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">🤖 AIでタスクを自動生成</h3>
+                    <form action="/ai/generate" method="post">
+                        <div class="input-group">
+                            <input type="text" name="goal" class="form-control" placeholder="例: 「週末のキャンプの準備」" required>
+                            <div class="input-group-append">
+                                <button class="btn btn-success" type="submit">生成</button>
+                            </div>
+                        </div>
+                        <small class="form-text text-muted">「キャンプ」「勉強」「旅行」等のキーワードでタスクを自動分割します。</small>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h2 class="mb-3" style="font-weight:700; color:#4299e1;">タスクの追加</h2>
+                    <form action="/" method="post">
+                      <div class="form-group"><input required type="text" name="add" class="form-control" placeholder="新しいタスクを入力..."/></div>
+                      <div class="form-row">
+                        <div class="form-group col-md-4"><label>期限日</label><input type="date" name="due_date" class="form-control"></div>
+                        <div class="form-group col-md-4"><label>優先度</label><select name="priority" class="form-control"><option value="medium" selected>中</option><option value="high">高</option><option value="low">低</option></select></div>
+                        <div class="form-group col-md-4"><label>カテゴリ</label><select name="category_id" class="form-control"><option value="none" selected>なし</option><% for(let category of categories) { %><option value="<%= category.id %>"><%= category.name %></option><% } %></select></div>
+                      </div>
+                      <button class="btn btn-primary btn-block" type="submit">タスクを追加</button>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm mb-4">
+                <div class="card-body">
+                    <h3 class="h5 mb-3">検索 & 絞り込み</h3>
+                    <form action="/" method="get" class="form-row align-items-end">
+                        <div class="form-group col-md-5"><label for="keyword">キーワード</label><input type="text" name="keyword" id="keyword" class="form-control" value="<%= locals.queryParams ? queryParams.keyword : '' %>" placeholder="タスク内容..."></div>
+                        <div class="form-group col-md-3"><label for="status">状態</label><select name="status" id="status" class="form-control"><option value="all" <%= locals.queryParams && queryParams.status === 'all' ? 'selected' : '' %>>すべて</option><option value="pending" <%= locals.queryParams && queryParams.status === 'pending' ? 'selected' : '' %>>未着手</option><option value="in_progress" <%= locals.queryParams && queryParams.status === 'in_progress' ? 'selected' : '' %>>進行中</option><option value="completed" <%= locals.queryParams && queryParams.status === 'completed' ? 'selected' : '' %>>完了</option></select></div>
+                        <div class="form-group col-md-2"><label for="priority">優先度</label><select name="priority" id="priority" class="form-control"><option value="all" <%= locals.queryParams && queryParams.priority === 'all' ? 'selected' : '' %>>すべて</option><option value="high" <%= locals.queryParams && queryParams.priority === 'high' ? 'selected' : '' %>>高</option><option value="medium" <%= locals.queryParams && queryParams.priority === 'medium' ? 'selected' : '' %>>中</option><option value="low" <%= locals.queryParams && queryParams.priority === 'low' ? 'selected' : '' %>>低</option></select></div>
+                        <div class="form-group col-md-2 d-flex flex-column"><button type="submit" class="btn btn-info">検索</button><a href="/" class="btn btn-secondary mt-1">クリア</a></div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h3 class="mb-3">タスクリスト</h3>
+                    <ul class="list-group">
+                        <% if(todos.length === 0){ %>
+                            <li class="list-group-item text-muted">該当するタスクはありません</li>
+                        <% } %>
+                        <% for(let todo of todos){ %>
+                            <li class="list-group-item">
+                                <div class="d-flex justify-content-between align-items-center">
+                                    <div class="d-flex flex-column">
+                                        <span class="<% if(todo.status === 'completed') { %>task-completed<% } %>" style="font-size:1.1em;"><%= todo.content %></span>
+                                        <small class="text-muted">
+                                          <% if(todo.due_date_formatted) { %>期限: <%= todo.due_date_formatted %> |<% } %>
+                                          優先度: <% if (todo.priority === 'high') { %><span class="badge badge-danger">高</span><% } else if (todo.priority === 'low') { %><span class="badge badge-secondary">低</span><% } else { %><span class="badge badge-info">中</span><% } %>
+                                          | 状態: <% if (todo.status === 'completed') { %><span class="badge badge-success">完了</span><% } else if (todo.status === 'in_progress') { %><span class="badge badge-primary">進行中</span><% } else { %><span class="badge badge-warning">未着手</span><% } %>
+                                          <% if(todo.category_name) { %>| カテゴリ: <span class="badge badge-dark"><%= todo.category_name %></span><% } %>
+                                        </small>
+                                    </div>
+                                    <div class="d-flex align-items-center">
+                                        <button class="btn btn-sm btn-outline-success mr-2 pomodoro-start-btn" data-task-content="<%= todo.content %>">集中</button>
+                                        <a href="/<%= todo.id %>/edit" class="btn btn-sm btn-info mr-2">編集</a>
+                                        <form action="/<%= todo.id %>/status" method="post" class="mr-2 mb-0"><input type="hidden" name="status" value="<%= todo.status %>"><button type="submit" class="btn btn-sm <%= todo.status === 'completed' ? 'btn-secondary' : 'btn-success' %>"><%= todo.status === 'completed' ? '戻す' : '完了' %></button></form>
+                                        <form action="/<%= todo.id %>/delete" method="post" class="mb-0" onsubmit="return confirm('本当にこのタスクを削除しますか？');"><button type="submit" class="btn btn-sm btn-danger">削除</button></form>
+                                    </div>
+                                </div>
+                                <div class="subtask-list">
+                                    <% if (todo.subtasks && todo.subtasks.length > 0) { %>
+                                        <ul class="list-unstyled">
+                                            <% todo.subtasks.forEach(subtask => { %>
+                                                <li class="d-flex justify-content-between align-items-center my-1">
+                                                    <form action="/subtasks/<%= subtask.id %>/status" method="post" class="d-flex align-items-center mb-0"><input type="hidden" name="is_completed" value="<%= subtask.is_completed %>"><input type="checkbox" class="mr-2" onchange="this.form.submit()" <%= subtask.is_completed ? 'checked' : '' %>><span class="<%= subtask.is_completed ? 'task-completed' : '' %>"><%= subtask.title %></span></form>
+                                                    <form action="/subtasks/<%= subtask.id %>/delete" method="post" class="mb-0"><button type="submit" class="btn btn-sm btn-outline-danger py-0 px-1">×</button></form>
+                                                </li>
+                                            <% }) %>
+                                        </ul>
+                                    <% } %>
+                                    <form action="/<%= todo.id %>/subtasks" method="post" class="form-inline mt-2">
+                                        <div class="input-group input-group-sm w-100"><input type="text" name="subtask_content" class="form-control" placeholder="サブタスクを追加..." required><div class="input-group-append"><button type="submit" class="btn btn-secondary">+</button></div></div>
+                                    </form>
+                                </div>
+                            </li>
+                        <% } %>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+    <% } else { %>
+    <div class="container text-center mt-5"><h1>Welcome to the TodoApp</h1><p class="lead">サインアップしてタスク管理を始めましょう！</p><a class="btn btn-primary btn-lg" href="/signup" role="button">Sign up now!</a></div>
     <% } %>
-  </ul>
-  </body>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const timerDisplay = document.getElementById('timer-display');
+        const timerMessage = document.getElementById('timer-message');
+        const startBtn = document.getElementById('start-btn');
+        const resetBtn = document.getElementById('reset-btn');
+        const pomodoroButtons = document.querySelectorAll('.pomodoro-start-btn');
+        let timerInterval;
+        let totalSeconds = 25 * 60;
+        let isRunning = false;
+        let isBreak = false;
+        let selectedTaskContent = '';
+
+        function updateDisplay() {
+            const minutes = Math.floor(totalSeconds / 60);
+            const seconds = totalSeconds % 60;
+            timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        }
+        function startTimer() {
+            if (isRunning) return;
+            isRunning = true;
+            startBtn.textContent = isBreak ? "休憩中..." : "集中中...";
+            startBtn.disabled = true;
+            timerInterval = setInterval(() => {
+                totalSeconds--;
+                updateDisplay();
+                if (totalSeconds <= 0) {
+                    clearInterval(timerInterval);
+                    isRunning = false;
+                    const audio = new Audio('https://www.soundjay.com/buttons/sounds/button-7.mp3'); // 簡単な通知音
+                    audio.play();
+                    if (isBreak) {
+                        alert('休憩終了！次のタスクに集中しましょう。');
+                        resetTimer(25 * 60, false);
+                    } else {
+                        alert(`「${selectedTaskContent}」の集中時間終了！5分間の休憩を取りましょう。`);
+                        resetTimer(5 * 60, true);
+                    }
+                }
+            }, 1000);
+        }
+        function resetTimer(seconds = 25 * 60, breakState = false) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            isBreak = breakState;
+            totalSeconds = seconds;
+            updateDisplay();
+            if (breakState) {
+                timerMessage.textContent = "休憩中です...";
+                startBtn.textContent = "休憩開始";
+                startBtn.disabled = false;
+            } else {
+                timerMessage.textContent = selectedTaskContent ? `集中中: ${selectedTaskContent}` : "集中するタスクを選んでください";
+                startBtn.textContent = "スタート";
+                startBtn.disabled = !selectedTaskContent;
+            }
+        }
+        startBtn.addEventListener('click', startTimer);
+        resetBtn.addEventListener('click', () => {
+            selectedTaskContent = '';
+            resetTimer();
+        });
+        pomodoroButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                selectedTaskContent = button.dataset.taskContent;
+                resetTimer();
+            });
+        });
+        updateDisplay();
+    });
+</script>
+</body>
 </html>
+<% if (locals.lastReward) { %>
+  <div class="modal fade" id="rewardModal" tabindex="-1" role="dialog">
+    <div class="modal-dialog modal-dialog-centered" role="document">
+      <div class="modal-content text-center" style="background-color: #f5eeda; border: 3px solid #8c6a4d;">
+        <div class="modal-header">
+          <h5 class="modal-title w-100">お宝ゲット！</h5>
+        </div>
+        <div class="modal-body">
+          <div id="treasure-chest" style="font-size: 5rem; cursor: pointer;">📦</div>
+          <div id="reward-result" style="display: none;">
+            <% if (lastReward.type === 'points') { %>
+              <h4>ボーナスポイント！</h4>
+              <p class="display-4 font-weight-bold text-success">+<%= lastReward.value %> pts</p>
+              <% if (lastReward.message) { %><p><%= lastReward.message %></p><% } %>
+            <% } else if (lastReward.type === 'item') { %>
+              <h4><%= lastReward.rarity.toUpperCase() %> アイテム発見！</h4>
+              <p style="font-size: 3rem;"><%= lastReward.icon_char %></p>
+              <h5><%= lastReward.name %></h5>
+              <p class="text-muted"><%= lastReward.description %></p>
+            <% } %>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-dismiss="modal">閉じる</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // 宝箱をクリックしたときのアニメーション
+      document.getElementById('treasure-chest').addEventListener('click', function() {
+        this.style.transform = 'scale(0)'; // 小さく消える
+        setTimeout(() => {
+          this.textContent = '💎'; // 開いた後のアイコン
+          this.style.transition = 'transform 0.2s';
+          this.style.transform = 'scale(1.2)'; // 少し大きくなる
+        }, 300);
+        setTimeout(() => {
+          document.getElementById('reward-result').style.display = 'block'; // 結果表示
+        }, 500);
+      });
+
+      // ページ読み込み時にモーダルを自動で表示
+      $('#rewardModal').modal('show');
+    });
+  </script>
+<% } %>
+
+<%# 新しくバッジを獲得した場合の通知モーダル %>
+<% if (locals.newlyEarnedBadge) { %>
+    <div class="modal fade" id="badgeModal" tabindex="-1" role="dialog">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content text-center" style="background-color: #f5eeda; border: 3px solid #8c6a4d;">
+                <div class="modal-header"><h5 class="modal-title w-100">実績達成！</h5></div>
+                <div class="modal-body">
+                    <p style="font-size: 4rem;"><%= newlyEarnedBadge.icon_char %></p>
+                    <h4><%= newlyEarnedBadge.name %></h4>
+                    <p class="text-muted"><%= newlyEarnedBadge.description %></p>
+                </div>
+                <div class="modal-footer"><button type="button" class="btn btn-secondary" data-dismiss="modal">やったね！</button></div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            $('#badgeModal').modal('show');
+        });
+    </script>
+<% } %>

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title><%= title %></title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css">
+</head>
+<body>
+<%- include('./header'); %>
+<div class="container mt-4">
+    <div class="row justify-content-center">
+        <div class="col-md-8">
+            <div class="card shadow-sm">
+                <div class="card-header">
+                    <h2><%= user.name %>さんのプロフィール</h2>
+                </div>
+                <div class="card-body">
+                    <h5 class="card-title">ステータス</h5>
+                    <p><strong>レベル:</strong> <%= user.level %></p>
+                    <p><strong>ポイント:</strong> <%= user.points %></p>
+                    <hr>
+                    <h5 class="card-title">獲得した実績バッジ</h5>
+                    <% if (badges.length > 0) { %>
+                        <div class="list-group">
+                            <% for(let badge of badges) { %>
+                                <div class="list-group-item">
+                                    <h4 class="d-flex align-items-center mb-1">
+                                        <span class="mr-2" style="font-size: 2rem;"><%= badge.icon_char %></span>
+                                        <%= badge.name %>
+                                    </h4>
+                                    <p class="mb-1"><%= badge.description %></p>
+                                </div>
+                            <% } %>
+                        </div>
+                    <% } else { %>
+                        <p class="text-muted">まだ獲得したバッジはありません。</p>
+                    <% } %>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+</body>
+</html>
