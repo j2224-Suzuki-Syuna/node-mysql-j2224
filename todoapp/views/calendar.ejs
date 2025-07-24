@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title><%= title %></title>
+  <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/css/bootstrap.min.css"
+        integrity="sha384-GJzZqFGwb1QTTN6wy59ffF1BuGJpLSa9DkKMp0DgiMDm4iYMj706tWS" crossorigin="anonymous">
+</head>
+<body>
+<%- include('./header'); %>
+<div class="container mt-4">
+  <div class="row justify-content-center">
+    <div class="col-md-8">
+      <%- include('./error_messages'); %>
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h2 class="mb-4" style="font-weight:700; color:#4299e1;">カテゴリ管理</h2>
+
+          <form action="/calendar" method="post" class="form-inline mb-4">
+            <div class="input-group w-100">
+              <input required type="text" name="name" class="form-control" placeholder="新しいカテゴリ名を入力..."/>
+              <div class="input-group-append">
+                <button class="btn btn-primary" type="submit">カテゴリ追加</button>
+              </div>
+            </div>
+          </form>
+
+          <h3 class="h5">既存のカテゴリ</h3>
+          <% if(categories.length > 0) { %>
+            <ul class="list-group">
+              <% for(let category of categories) { %>
+                <li class="list-group-item"><%= category.name %></li>
+              <% } %>
+            </ul>
+          <% } else { %>
+            <p class="text-muted">カテゴリはまだありません。</p>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.6/umd/popper.min.js"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.2.1/js/bootstrap.min.js"></script>
+</body>
+</html>

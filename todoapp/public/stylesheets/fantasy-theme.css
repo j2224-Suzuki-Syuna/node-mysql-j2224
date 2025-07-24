@@ -1,0 +1,90 @@
+/* --- ファンタジーテーマ --- */
+
+/* 1. フォントの読み込み */
+@import url('https://fonts.googleapis.com/css2?family=MedievalSharp&display=swap');
+
+/* 2. 全体の基本設定 */
+body {
+    /* 背景に羊皮紙の画像を設定 */
+    background-image: url('https://www.transparenttextures.com/patterns/old-paper.png');
+    background-color: #f5eeda; /* 画像が読み込めなかった場合の背景色 */
+    
+    /* 基本フォントを古文書風に */
+    font-family: 'MedievalSharp', cursive;
+    color: #4a2c0f; /* 文字色を濃い茶色に */
+}
+
+/* 3. 各パーツのスタイリング */
+
+/* カード（ウィンドウ）のデザイン */
+.card {
+    background-color: rgba(245, 238, 218, 0.85); /* 少し透けたクリーム色 */
+    border: 3px solid #8c6a4d; /* 枠線を茶色に */
+    border-radius: 0; /* 角を四角く */
+    box-shadow: 5px 5px 10px rgba(0,0,0,0.4);
+}
+
+/* ヘッダー */
+.navbar {
+    background-color: #5a3e2b !important; /* ナビゲーションバーの背景を濃い木目調の色に */
+    border-bottom: 4px solid #4a2c0f;
+}
+.navbar-brand, .nav-link {
+    color: #f5eeda !important; /* 文字色をクリーム色に */
+    font-size: 1.2rem;
+}
+.navbar-brand:hover, .nav-link:hover {
+    color: #fff !important;
+}
+
+/* 見出し (h2, h3) */
+h2, h3, .h5 {
+    color: #5a3e2b;
+    font-weight: bold;
+}
+
+/* ボタンのデザイン */
+.btn-primary {
+    background-color: #6d4c35;
+    border-color: #4a2c0f;
+    font-family: 'MedievalSharp', cursive;
+}
+.btn-primary:hover {
+    background-color: #4a2c0f;
+    border-color: #3b230f;
+}
+.btn-secondary {
+    background-color: #9e8a78;
+    border-color: #6d4c35;
+    font-family: 'MedievalSharp', cursive;
+}
+.btn-secondary:hover {
+    background-color: #8c6a4d;
+    border-color: #5a3e2b;
+}
+
+/* フォームの入力欄 */
+.form-control {
+    background-color: #fff;
+    border: 1px solid #8c6a4d;
+    font-family: sans-serif; /* 入力欄は読みやすいゴシック体に戻す */
+    color: #333;
+}
+.form-control:focus {
+    border-color: #5a3e2b;
+    box-shadow: 0 0 0 0.2rem rgba(90, 62, 43, 0.25);
+}
+
+/* タスク一覧 */
+.list-group-item {
+    background-color: transparent;
+    border-color: rgba(140, 106, 77, 0.5);
+}
+
+/* プログレスバー（レベル） */
+.progress {
+    background-color: #8c6a4d;
+}
+.progress-bar {
+    background-color: #e0a800; /* ゴールドっぽい色 */
+}

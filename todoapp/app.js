@@ -21,6 +21,16 @@ require("./config/passport")(app);
 
 // router
 app.use('/', require('./routes'));
+app.use('/calendar', require('./routes/calendar')); // ★★★ この行を追加 ★★★
+// ...
+app.use('/', require('./routes'));
+app.use('/calendar', require('./routes/calendar'));
+app.use('/ai', require('./routes/ai')); 
+app.use('/profile', require('./routes/profile')); 
+
+
+// catch 404 and forward to error handler
+// ...
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
